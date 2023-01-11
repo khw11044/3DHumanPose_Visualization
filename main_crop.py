@@ -48,8 +48,42 @@ def final_visualization(pose_3D_pred, pose_3D_gt, arr, Radius, angles, save_img_
 def main(img_path, pose2D, pose3D, pose3D_gt, save_img_folder):
     data_type = 'mpii'
     img = cv2.imread(img_path)
-    img = vis_2D_pose(img, pose2D, data_type=data_type)
-    img = cv2.resize(img, (256, 256))
+    img_with_p2d = vis_2D_pose(img, pose2D, data_type=data_type)
+
+    # human crop
+    x_set, y_set = pose2D.T
+
+    # rectangles = [[] for _ in range(4)]
+    rectangle = (max(int(abs(x_set.max()-x_set.min())),
+                     int(abs(y_set.max()-y_set.min())))/2)*1.4
+    # rectangles[v].append(rectangle)
+    # rectangle = np.mean(rectangles[v])
+
+    if data_type == 'h36m':
+        root_joint = pose2D[0]
+    else:
+        root_joint = pose2D[6]
+
+    left_range = int(root_joint[1]-rectangle)
+    right_range = int(root_joint[1]+rectangle)
+    bottom_range = int(root_joint[0]-rectangle)
+    upper_range = int(root_joint[0]+rectangle)
+
+    if left_range < 0:
+        left_range = 0
+    if right_range > img.shape[1]:
+        right_range = img.shape[1]
+    if bottom_range < 0:
+        bottom_range = 0
+    if upper_range > img.shape[0]:
+        upper_range = img.shape[0]
+
+    cropimg = img_with_p2d[left_range:
+                           right_range,
+                           bottom_range:
+                           upper_range]
+
+    img = cv2.resize(cropimg, (256, 256))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     arr = img / 255
