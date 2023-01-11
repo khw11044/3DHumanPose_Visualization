@@ -27,12 +27,14 @@ def final_visualization(pose_3D_pred, pose_3D_gt, arr, Radius, angles, save_img_
     ax_3D_pred.view_init(angles[0], angles[1])
     # ax_3D_pred.grid(False)
 
+    ax_3D = fig.add_subplot(1, 1, 1, projection='3d')
     pred3D = pose_3D_pred - np.array([0, 0, 530])
     gt3D = pose_3D_gt - np.array([0, 0, 530])
-    show3Dpose(pred3D, ax_3D_pred, data_type='mpii',
+    show3Dpose(pred3D, ax_3D, data_type='mpii',
                radius=Radius, lcolor='black', angles=angles)      # 20,-70
     # show3Dpose_with_annot2(gt3D, pred3D, ax_3D_pred, data_type='mpii', radius=Radius, lcolor='blac)
-
+    ax_3D.grid(False)
+    ax_3D.axis('off')
     print('drawing....')
     plt.draw()
     i = 0
@@ -40,7 +42,7 @@ def final_visualization(pose_3D_pred, pose_3D_gt, arr, Radius, angles, save_img_
     #plt.savefig(config.save_img_folder + '/%05d.png'% (i))
     plt.pause(0.01)
     plt.show()
-    fig.clear()
+    # fig.clear()
 
 
 def main(img_path, pose2D, pose3D, pose3D_gt, save_img_folder):
